@@ -3,7 +3,7 @@ from polls import views
 
 urlpatterns=[
     path('', views.index),
-    path('creat/', views.creat),
+    path('create/', views.create),
     path('read/<id>/', views.read),
     path('lotto/', views.lotto),
 ]

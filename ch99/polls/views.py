@@ -1,6 +1,8 @@
 from django.shortcuts import render, HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 import random
 
+nextId = 4
 topics = [
     {'id' : 1,
      'title' : '전자통신컴퓨터공학부',
@@ -11,16 +13,7 @@ topics = [
      {'id' : 3,
      'title' : '유아교육과',
      'body' : '유아교육과에 오신것을 환영합니다.'},
-     {'id' : 4,
-     'title' : '기계자동차공학부',
-     'body' : '기계자동차공학부에 오신것을 환영합니다.'},
-     {'id' : 5,
-     'title' : '물리치료학과',
-     'body' : '물리치료학과에 오신것을 환영합니다.'},
-     {'id' : 6,
-     'title' : '특수건설기계학과',
-     'body' : '특수건설기계학과에 오신것을 환영합니다.'},
-]
+]   
 
 def HTML_Temp(articleTag):
     global topics
@@ -37,6 +30,9 @@ def HTML_Temp(articleTag):
                 {ol}
             </ol>
             {articleTag}
+            <ul>
+                <li><a href="/create/">create</a></li>
+            </ul>
         </body>
     </html>
     '''
@@ -44,12 +40,30 @@ def HTML_Temp(articleTag):
 def index(request):
     article = '''
     <h2>Welcome</h2>
-    <p>안녕하세요.</br>쟝고입니다.</p>
+    <p>안녕하세요.</br><b>쟝고입니다.</b></p>
     '''
     return HttpResponse(HTML_Temp(article))
 
-def creat(request):
-    return HttpResponse('안녕하세요 polls creat 홈페이지에 오신 것을 환영합니다.')
+@csrf_exempt
+def create(request):
+    global nextId
+    if request.method == 'GET':
+        article = '''
+            <form action="/create/" method="POST">
+                <p><input type="text" name="title" placeholder="title"></p>
+                <p><textarea name="body" placeholder="body"></textarea></p>
+                <p><input type="submit"></p>
+            </form>
+        '''
+
+        return HttpResponse(HTML_Temp(article))
+    elif request.method == 'POST':
+        title = request.POST['title']
+        body = request.POST['body']
+        newTopic = {"id":nextId, "title":title, "body":body}
+        topics.append(newTopic)
+        nextId+=1
+        return HttpResponse(HTML_Temp('aaa'))
 
 def read(request, id):
     global topics
